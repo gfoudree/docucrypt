@@ -1,43 +1,18 @@
 <!DOCTYPE html>
+
 <head>
+    <title>DocuCrypt</title>
     <script type="text/javascript" src="static/crypto-js/crypto-js.js"></script>
-    <script>
-        var ciphertext = CryptoJS.AES.encrypt('my message', 'secret key 123');
-        function sendMessage(message, severity) {
-            console.log(message);
-        }
-
-        function handleUpload() {
-            var file = document.getElementById('fileToUpload').files[0];
-
-            if (file.size > (25*1024*1024)) { // Check if file size is within 25MB limit
-                sendMessage("Size is greater than 25MB!", "error");
-                return;
-            }
-
-            var fReader = new FileReader();
-            fReader.onprogress = function(progEvent) {
-                if (progEvent.lengthComputable) {
-                    var percentLoaded = Math.round((progEvent.loaded * 100) / progEvent.total);
-                    console.log("Loaded " + percentLoaded);
-                }
-            }
-            fReader.onloadend = function () {
-                console.log(fReader.result);
-            }
-            fReader.onerror = function() {
-                sendMessage("Error uploading file", "critical");
-            }
-
-            fReader.readAsBinaryString(file);
-        }
-    </script>
+    <script type="text/javascript" src="static/bcryptjs/dist/bcrypt.js"></script>
+    <script type="text/javascript" src="static/main.js"></script>
 </head>
 <html>
+
 <body>
 
-<input type="file" name="fileToUpload" id="fileToUpload">
-<input type="button" name="uploadButton" onclick="handleUpload()" value="Upload">
+    <input type="file" name="fileToUpload" id="fileToUpload">
+    <input type="button" name="uploadButton" onclick="handleUpload()" value="Upload">
 
 </body>
+
 </html>
