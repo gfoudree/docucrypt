@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <head>
+    <script type="text/javascript" src="static/crypto-js/crypto-js.js"></script>
     <script>
+        var ciphertext = CryptoJS.AES.encrypt('my message', 'secret key 123');
         function sendMessage(message, severity) {
             console.log(message);
         }
@@ -26,7 +28,7 @@
             fReader.onerror = function() {
                 sendMessage("Error uploading file", "critical");
             }
-            
+
             fReader.readAsBinaryString(file);
         }
     </script>
