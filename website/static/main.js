@@ -107,11 +107,45 @@ function handleUpload() {
 
             encryptData(fReader.result, password).then(function(encryptedDocument) {
                 console.log(encryptedDocument);
+
+                var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+                var encBytes = new Uint8Array(encryptedDocument['CipherText']);
+                let fd = new FormData();
+                fd.append('data', base64js.fromByteArray(encBytes));
+                fd.append('IV', base64js.fromByteArray(encryptedDocument['IV']));
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/upload/',
+                    data: fd,
+                    headers: {'X-CSRFToken': csrftoken},
+                    processData: false,
+                    contentType: false
+                }).done(function(data) {
+                    console.log(data);
+                });
             });
         }
         else {
             encryptData(fReader.result, '').then(function(encryptedDocument) {
                 console.log(encryptedDocument);
+                
+                var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+                var encBytes = new Uint8Array(encryptedDocument['CipherText']);
+                let fd = new FormData();
+                fd.append('data', base64js.fromByteArray(encBytes));
+                fd.append('IV', base64js.fromByteArray(encryptedDocument['IV']));
+                
+                $.ajax({
+                    type: 'POST',
+                    url: '/upload/',
+                    data: fd,
+                    headers: {'X-CSRFToken': csrftoken},
+                    processData: false,
+                    contentType: false
+                }).done(function(data) {
+                    console.log(data);
+                });
             });
         }
     }
