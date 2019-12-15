@@ -2,17 +2,16 @@
 
 <head>
     <title>DocuCrypt</title>
-    <script type="text/javascript" src="static/crypto-js/crypto-js.js"></script>
-    <script type="text/javascript" src="static/bcryptjs/dist/bcrypt.js"></script>
+    <script type="text/javascript" src="static/scryptsy.js"></script>
+    <script type="text/javascript" src="static/base64-js/base64js.min.js"></script>
+    <script type="text/javascript" src="static/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="static/main.js"></script>
 </head>
-<html>
 
 <body>
-
     <input type="file" name="fileToUpload" id="fileToUpload">
     <input type="button" name="uploadButton" onclick="handleUpload()" value="Upload">
-
+    <input type="text" name="password" id="passwordField">
 </body>
 
 </html>

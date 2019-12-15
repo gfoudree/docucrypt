@@ -1,0 +1,14 @@
+{
+  "name": "docucrypt",
+  "version": "1.0.0",
+  "description": "Secure document control platform",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Grant Foudree",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "base64-js": "^1.3.1"
+  }
+}

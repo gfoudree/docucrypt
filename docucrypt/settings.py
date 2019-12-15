@@ -120,5 +120,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "website/static"),
-    os.path.join(BASE_DIR, "website/bower_components"),
+    os.path.join(BASE_DIR, "website/node_modules"),
 ]
