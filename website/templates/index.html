@@ -6,17 +6,46 @@
     <script type="text/javascript" src="static/scryptsy.js"></script>
     <script type="text/javascript" src="static/base64-js/base64js.min.js"></script>
     <script type="text/javascript" src="static/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="static/main.js"></script>
     <script src="static/semantic.min.js"></script>
+    <script src="static/components/dropdown.js"></script>
+    <script type="text/javascript" src="static/main.js"></script>
+
     <link rel="stylesheet" type="text/css" href="static/semantic.min.css">
 </head>
 
 <body>
     {% csrf_token %}
-    <input type="file" name="fileToUpload" id="fileToUpload">
-    <input type="button" name="uploadButton" onclick="handleUpload()" value="Upload">
-    <input type="text" name="password" id="passwordField">
-    <button class="ui button">Follow</button>
+    
+    <div class="ui one column centered aligned page grid">
+        <div class="column nine wide">
+          <input type="file" name="fileToUpload" id="fileToUpload">
+          <div class="ui form" id="form">
+            <div class="field" id="passwordField">
+                <label>Password</label>
+                <input placeholder="Encryption Password" type="password" name="password" id="passwordInputField" onchange="checkPassword()">
+            </div>
+            <div class="field">
+                <label>Expiration Time</label>
+                <div class="ui selection dropdown">
+                    <input type="hidden" name="expirationTIme">
+                    <i class="dropdown icon"></i>
+                    <div class="default text">Never</div>
+                    <div class="menu">
+                        <div class="item" data-value="0">12 Hours</div>
+                        <div class="item" data-value="1">24 Hours</div>
+                        <div class="item" data-value="2">1 Week</div>
+                        <div class="item" data-value="3">1 Month</div>
+                        <div class="item" data-value="4">1 Year</div>
+                        <div class="item" data-value="5">Never</div>
+                    </div>
+                </div>
+            </div>
+            <button class="ui button" type="button" name="uploadButton" onclick="handleUpload()">Upload</button>
+          </div>
+
+          
+        </div>
+    </div>
 </body>
 
 </html>
