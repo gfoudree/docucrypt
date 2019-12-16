@@ -120,16 +120,20 @@ function handleUpload() {
                     data: fd,
                     headers: {'X-CSRFToken': csrftoken},
                     processData: false,
-                    contentType: false
-                }).done(function(data) {
-                    console.log(data);
+                    contentType: false,
+                    error: function(request, error) {
+                        sendMessage("Error sending encrypted file to server!", 'critical');
+                    },
+                    success: function(data) {
+                        console.log("Successfully uploaded!");
+                    }
                 });
             });
         }
         else {
             encryptData(fReader.result, '').then(function(encryptedDocument) {
                 console.log(encryptedDocument);
-                
+
                 var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
                 var encBytes = new Uint8Array(encryptedDocument['CipherText']);
                 let fd = new FormData();
@@ -142,9 +146,13 @@ function handleUpload() {
                     data: fd,
                     headers: {'X-CSRFToken': csrftoken},
                     processData: false,
-                    contentType: false
-                }).done(function(data) {
-                    console.log(data);
+                    contentType: false,
+                    error: function(request, error) {
+                        sendMessage("Error sending encrypted file to server!", 'critical');
+                    },
+                    success: function(data) {
+                        console.log("Successfully uploaded!");
+                    }
                 });
             });
         }

@@ -80,7 +80,6 @@ DATABASES = {
     }
 }
 
-
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -122,3 +121,5 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "website/static"),
     os.path.join(BASE_DIR, "website/node_modules"),
 ]
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = 66214400
