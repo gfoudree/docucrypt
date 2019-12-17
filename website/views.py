@@ -25,7 +25,7 @@ def saveUploadedFile(request):
     # Save file to disk
     fileData = base64.decodebytes(fileParam)
     fName = "{0}{1}.upload".format(UPLOAD_FOLDER, secrets.token_hex(32))
-    urlFName = secrets.token_urlsafe(32) # Name for url portion (http://swag.com/get/urlFName#decryptionKey)
+    urlFName = secrets.token_urlsafe(40)[:40] # Name for url portion (http://swag.com/get/urlFName#decryptionKey), truncated @ 40 b/c param is bits -> var output len
 
     writtenBytes = 0
 
@@ -80,3 +80,12 @@ def upload(request):
             return HttpResponse(result, status=400)
     else:
         return redirect('/')
+
+def getFile(request, fileID):
+    if len(fileID) != 40:
+        return HttpResponse("Bad file name", status=400)
+    try:
+        upload = Upload.objects.get(urlFName=fileID)
+        return HttpResponse("Found!")
+    except:
+        return HttpResponse("Bad file name", status=400)

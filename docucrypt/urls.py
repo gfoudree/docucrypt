@@ -22,4 +22,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^$', views.index, name='index'),
     path('upload/', views.upload, name='upload'),
+    path('file/<slug:fileID>/', views.getFile),
 ]
