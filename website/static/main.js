@@ -25,10 +25,10 @@ function displayMessage(message, title, bad) {
         <div class="header">' + title + '\n</div>\n<p>\n' + message + '\</p>\n</div>';
 
     $(html).hide().fadeIn(500).insertAfter("#form");
-    $('.message .close').on('click', function() {
+    $('.message .close').on('click', function () {
         $(this)
-        .closest('.message')
-        .transition('fade');
+            .closest('.message')
+            .transition('fade');
     });
 }
 
@@ -143,53 +143,13 @@ function handleUpload() {
 
             encryptData(fReader.result, password).then(function (encryptedDocument) {
                 console.log(encryptedDocument);
-
-                var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
-                var encBytes = new Uint8Array(encryptedDocument['CipherText']);
-                let fd = new FormData();
-                fd.append('data', base64js.fromByteArray(encBytes));
-                fd.append('IV', base64js.fromByteArray(encryptedDocument['IV']));
-
-                $.ajax({
-                    type: 'POST',
-                    url: '/upload/',
-                    data: fd,
-                    headers: { 'X-CSRFToken': csrftoken },
-                    processData: false,
-                    contentType: false,
-                    error: function (request, error) {
-                        sendMessage("Error sending encrypted file to server!", 'critical');
-                    },
-                    success: function (data) {
-                        displayMessage('', 'File upload success!', false);
-                    }
-                });
+                sendEncryptedContent(encryptedDocument);
             });
         }
         else {
             encryptData(fReader.result, '').then(function (encryptedDocument) {
                 console.log(encryptedDocument);
-
-                var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
-                var encBytes = new Uint8Array(encryptedDocument['CipherText']);
-                let fd = new FormData();
-                fd.append('data', base64js.fromByteArray(encBytes));
-                fd.append('IV', base64js.fromByteArray(encryptedDocument['IV']));
-
-                $.ajax({
-                    type: 'POST',
-                    url: '/upload/',
-                    data: fd,
-                    headers: { 'X-CSRFToken': csrftoken },
-                    processData: false,
-                    contentType: false,
-                    error: function (request, error) {
-                        sendMessage("Error sending encrypted file to server!", 'critical');
-                    },
-                    success: function (data) {
-                        displayMessage('', 'File upload success!', false);
-                    }
-                });
+                sendEncryptedContent(encryptedDocument);
             });
         }
     }
@@ -197,6 +157,30 @@ function handleUpload() {
     fReader.onerror = function () {
         sendMessage("Error uploading file", "critical");
     }
-
     fReader.readAsBinaryString(file);
+}
+
+function sendEncryptedContent(encryptedDocument) {
+    var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+    var encBytes = new Uint8Array(encryptedDocument['CipherText']);
+    let fd = new FormData();
+    fd.append('data', base64js.fromByteArray(encBytes));
+    fd.append('IV', base64js.fromByteArray(encryptedDocument['IV']));
+    fd.append('expirationTime', $('#expirationTime').val());
+    fd.append('fileName', document.getElementById('fileToUpload').files.item(0).name);
+
+    $.ajax({
+        type: 'POST',
+        url: '/upload/',
+        data: fd,
+        headers: { 'X-CSRFToken': csrftoken },
+        processData: false,
+        contentType: false,
+        error: function (request, error) {
+            sendMessage("Error sending encrypted file to server!", 'critical');
+        },
+        success: function (data) {
+            displayMessage('', 'File upload success!', false);
+        }
+    });
 }

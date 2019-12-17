@@ -1,13 +1,54 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
+from .models import Upload
 
+import secrets
 import base64
-# Create your views here.
+import hashlib
+import datetime
+
+UPLOAD_FOLDER = '/tmp/'
+EXPIRATION_TABLE = ['12 Hours', '24 Hours', '1 Week', '1 Month', '1 Year', 'Never']
 
 @ensure_csrf_cookie
 def index(request):
     return render(request, 'index.html', {'title' : 'Docucrypt'})
+
+def saveUploadedFile(request):
+    # Get parameters
+    fileName = request.POST.get('fileName', '')
+    expirationTime = int(request.POST.get('expirationTime', '5'))
+    fileParam = request.POST.get('data', '').encode()
+    IVParam = request.POST.get('IV', '').encode()
+
+    # Save file to disk
+    fileData = base64.decodebytes(fileParam)
+    fName = "{0}{1}.upload".format(UPLOAD_FOLDER, secrets.token_hex(24))
+    writtenBytes = 0
+
+    with open(fName, 'wb') as f:
+        writtenBytes = f.write(fileData)
+    
+    # Calculate Checksum
+    hsh = hashlib.sha256()
+    hsh.update(fileData)
+
+    # Populate model & save
+    try:
+        upload = Upload()
+        upload.uploadTime = datetime.datetime.now()
+        upload.fileName = fileName
+        upload.IV = IVParam.decode()
+        upload.uploadedToFile = fName
+        upload.fileSize = writtenBytes
+        upload.expirationTime = EXPIRATION_TABLE[expirationTime] #TODO: change this to use current time + expiration time so we can cronjob cleanup!
+        upload.fileSHA256 = hsh.hexdigest()
+        upload.save()
+        print(upload)
+        return True
+    except:
+        return False
 
 def upload(request):
     if request.method == 'POST':
@@ -28,7 +69,9 @@ def upload(request):
         if len(IV) != 16: # IV is truncated?
             return HttpResponse("Bad upload", status=400)
         
-        print("IV = {}".format(IV))
-        return HttpResponse("OK")
+        if saveUploadedFile(request):
+            return HttpResponse("OK")
+        else:
+            return HttpResponse("Error saving upload to system", status=400)
     else:
         return redirect('/')
