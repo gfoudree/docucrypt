@@ -181,6 +181,7 @@ function sendEncryptedContent(encryptedDocument) {
         },
         success: function (data) {
             displayMessage('', 'File upload success!', false);
+            console.log(data);
         }
     });
 }

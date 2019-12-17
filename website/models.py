@@ -9,7 +9,8 @@ class Upload(models.Model):
     IV = models.CharField(max_length=32)
     fileSize = models.IntegerField()
     expirationTime = models.CharField(max_length=10)
-
+    urlFName = models.CharField(max_length=32)
+    
     def __str__(self):
         return '{} {} {} {} {} {} {}'.format(self.uploadTime, self.fileName,
             self.fileSHA256, self.uploadedToFile, self.IV, self.fileSize,

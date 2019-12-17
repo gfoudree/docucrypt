@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import Upload
 
@@ -24,7 +24,9 @@ def saveUploadedFile(request):
 
     # Save file to disk
     fileData = base64.decodebytes(fileParam)
-    fName = "{0}{1}.upload".format(UPLOAD_FOLDER, secrets.token_hex(24))
+    fName = "{0}{1}.upload".format(UPLOAD_FOLDER, secrets.token_hex(32))
+    urlFName = secrets.token_urlsafe(32) # Name for url portion (http://swag.com/get/urlFName#decryptionKey)
+
     writtenBytes = 0
 
     with open(fName, 'wb') as f:
@@ -39,6 +41,7 @@ def saveUploadedFile(request):
         upload = Upload()
         upload.uploadTime = datetime.datetime.now()
         upload.fileName = fileName
+        upload.urlFName = urlFName
         upload.IV = IVParam.decode()
         upload.uploadedToFile = fName
         upload.fileSize = writtenBytes
@@ -46,9 +49,9 @@ def saveUploadedFile(request):
         upload.fileSHA256 = hsh.hexdigest()
         upload.save()
         print(upload)
-        return True
+        return {'success': True, 'url': urlFName}
     except:
-        return False
+        return {'success': False, 'url': ''}
 
 def upload(request):
     if request.method == 'POST':
@@ -58,6 +61,7 @@ def upload(request):
         encryptedFile = b''
         IV = b''
 
+        # Check the passed parameters
         if len(IVParam) < 5 or len(fileParam) < 5:
             return HttpResponse("Bad upload", status=400)
         try: # Try to decode, abort if it is broken
@@ -69,9 +73,10 @@ def upload(request):
         if len(IV) != 16: # IV is truncated?
             return HttpResponse("Bad upload", status=400)
         
-        if saveUploadedFile(request):
-            return HttpResponse("OK")
+        result = saveUploadedFile(request)
+        if result['success']:
+            return JsonResponse(result)
         else:
-            return HttpResponse("Error saving upload to system", status=400)
+            return HttpResponse(result, status=400)
     else:
         return redirect('/')
