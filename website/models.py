@@ -10,6 +10,7 @@ class Upload(models.Model):
     fileSize = models.IntegerField()
     expirationTime = models.CharField(max_length=10)
     urlFName = models.CharField(max_length=40)
+    salt = models.CharField(max_length=128)
 
     def __str__(self):
         return '{} {} {} {} {} {} {}'.format(self.uploadTime, self.fileName,

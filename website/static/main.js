@@ -64,6 +64,7 @@ async function encryptData(data, password) {
     let enc = new TextEncoder();
     let iv = window.crypto.getRandomValues(new Uint8Array(16));
     let key;
+    let salt;
 
     if (password.length === 0) {
         // Generate random AES key
@@ -78,7 +79,7 @@ async function encryptData(data, password) {
     }
     else {
         // Derive AES key from password
-        let salt = window.crypto.getRandomValues(new Uint8Array(16));
+        salt = window.crypto.getRandomValues(new Uint8Array(16));
         salt = base64js.fromByteArray(salt);
         scryptKey = await scrypt.async(
             password,
@@ -114,7 +115,7 @@ async function encryptData(data, password) {
     let exportedKey = await crypto.subtle.exportKey("raw", key);
     exportedKey = new Uint8Array(exportedKey);
 
-    return { 'IV': iv, 'CipherText': await cipherText, 'Key': exportedKey };
+    return { 'IV': iv, 'CipherText': await cipherText, 'Key': exportedKey, 'Salt': salt };
 }
 
 function handleUpload() {
@@ -166,6 +167,7 @@ function sendEncryptedContent(encryptedDocument) {
     let fd = new FormData();
     fd.append('data', base64js.fromByteArray(encBytes));
     fd.append('IV', base64js.fromByteArray(encryptedDocument['IV']));
+    fd.append('Salt', encryptedDocument['Salt']);
     fd.append('expirationTime', $('#expirationTime').val());
     fd.append('fileName', document.getElementById('fileToUpload').files.item(0).name);
 

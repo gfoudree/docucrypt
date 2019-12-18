@@ -7,9 +7,11 @@ import secrets
 import base64
 import hashlib
 import datetime
+from datetime import *
 
 UPLOAD_FOLDER = '/tmp/'
-EXPIRATION_TABLE = ['12 Hours', '24 Hours', '1 Week', '1 Month', '1 Year', 'Never']
+EXPIRATION_TABLE = [timedelta(hours=12), timedelta(days=1), timedelta(days=7),
+        timedelta(days=28), timedelta(days=365)]
 
 @ensure_csrf_cookie
 def index(request):
@@ -21,6 +23,7 @@ def saveUploadedFile(request):
     expirationTime = int(request.POST.get('expirationTime', '5'))
     fileParam = request.POST.get('data', '').encode()
     IVParam = request.POST.get('IV', '').encode()
+    salt = request.POST.get('Salt', '')
 
     # Save file to disk
     fileData = base64.decodebytes(fileParam)
@@ -43,9 +46,13 @@ def saveUploadedFile(request):
         upload.fileName = fileName
         upload.urlFName = urlFName
         upload.IV = IVParam.decode()
+        upload.salt = salt
         upload.uploadedToFile = fName
         upload.fileSize = writtenBytes
-        upload.expirationTime = EXPIRATION_TABLE[expirationTime] #TODO: change this to use current time + expiration time so we can cronjob cleanup!
+        if expirationTime == 5:
+            upload.expirationTime = -1
+        else:
+            upload.expirationTime = upload.uploadTime + EXPIRATION_TABLE[upload.expirationTime]
         upload.fileSHA256 = hsh.hexdigest()
         upload.save()
         print(upload)
