@@ -122,7 +122,7 @@ function handleUpload() {
     var file = document.getElementById('fileToUpload').files[0];
 
     if (file.size > (25 * 1024 * 1024)) { // Check if file size is within 25MB limit
-        sendMessage("Size is greater than 25MB!", "error");
+        displayMessage('', "Size is greater than 25MB!", true);
         return;
     }
 
@@ -135,10 +135,10 @@ function handleUpload() {
     }
     fReader.onloadend = function () {
         // Check if password is supplied
-        let password = $('#passwordField').val();
+        let password = $('#passwordInputField').val();
         if (password) {
             if (password.length < 8) {
-                sendMessage('Password length is too short. Please use more than 8 characters!', 'error');
+                displayMessage('Password length is too short. Please use more than 8 characters!', true);
                 return;
             }
 
@@ -156,7 +156,7 @@ function handleUpload() {
     }
 
     fReader.onerror = function () {
-        sendMessage("Error uploading file", "critical");
+        displayMessage('', "Error uploading file", true);
     }
     fReader.readAsBinaryString(file);
 }
@@ -179,7 +179,7 @@ function sendEncryptedContent(encryptedDocument) {
         processData: false,
         contentType: false,
         error: function (request, error) {
-            sendMessage("Error sending encrypted file to server!", 'critical');
+            displayMessage('', "Error sending encrypted file to server!", true);
         },
         success: function (data) {
             displayMessage('', 'File upload success!', false);

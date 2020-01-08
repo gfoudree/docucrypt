@@ -20,7 +20,7 @@ def index(request):
 def saveUploadedFile(request):
     # Get parameters
     fileName = request.POST.get('fileName', '')
-    expirationTime = int(request.POST.get('expirationTime', '5'))
+    expirationTime = 5 if request.POST.get('expirationTime', '5') == '' else int(request.POST.get('expirationTime', '5'))
     fileParam = request.POST.get('data', '').encode()
     IVParam = request.POST.get('IV', '').encode()
     salt = request.POST.get('Salt', '')
@@ -42,7 +42,7 @@ def saveUploadedFile(request):
     # Populate model & save
     try:
         upload = Upload()
-        upload.uploadTime = datetime.datetime.now()
+        upload.uploadTime = datetime.now()
         upload.fileName = fileName
         upload.urlFName = urlFName
         upload.IV = IVParam.decode()
@@ -52,12 +52,14 @@ def saveUploadedFile(request):
         if expirationTime == 5:
             upload.expirationTime = -1
         else:
+            upload.expirationTime = expirationTime
             upload.expirationTime = upload.uploadTime + EXPIRATION_TABLE[upload.expirationTime]
         upload.fileSHA256 = hsh.hexdigest()
         upload.save()
         print(upload)
         return {'success': True, 'url': urlFName}
-    except:
+    except Exception as err:
+        print("Error saving uploaded file to database: " + str(err))
         return {'success': False, 'url': ''}
 
 def upload(request):
@@ -81,6 +83,7 @@ def upload(request):
             return HttpResponse("Bad upload", status=400)
         
         result = saveUploadedFile(request)
+        
         if result['success']:
             return JsonResponse(result)
         else:
