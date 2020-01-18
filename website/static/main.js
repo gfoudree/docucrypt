@@ -120,6 +120,8 @@ async function encryptData(data, password) {
 
 function handleUpload() {
     var file = document.getElementById('fileToUpload').files[0];
+    var uploadButton = document.getElementById('uploadButton');
+    uploadButton.classList.add("loading");
 
     if (file.size > (25 * 1024 * 1024)) { // Check if file size is within 25MB limit
         displayMessage('', "Size is greater than 25MB!", true);
@@ -186,4 +188,6 @@ function sendEncryptedContent(encryptedDocument) {
             console.log(data);
         }
     });
+    var uploadButton = document.getElementById('uploadButton');
+    uploadButton.classList.remove("loading");
 }

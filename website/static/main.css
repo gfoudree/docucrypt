@@ -1,0 +1,9 @@
+body {
+    background-color: rgb(253, 253, 253);
+}
+
+#uploadBox {
+    border: 1px dashed rgba(21, 20, 26, 0.2);
+    border-radius: 3px;
+    border-radius: 4px;
+}

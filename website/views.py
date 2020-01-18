@@ -49,11 +49,10 @@ def saveUploadedFile(request):
         upload.salt = salt
         upload.uploadedToFile = fName
         upload.fileSize = writtenBytes
-        if expirationTime == 5:
-            upload.expirationTime = -1
-        else:
-            upload.expirationTime = expirationTime
-            upload.expirationTime = upload.uploadTime + EXPIRATION_TABLE[upload.expirationTime]
+
+        upload.expirationTime = -1 if expirationTime == 5 else expirationTime
+        upload.expirationTime = upload.uploadTime + EXPIRATION_TABLE[upload.expirationTime] # Compute expiration time with timedelta
+
         upload.fileSHA256 = hsh.hexdigest()
         upload.save()
         print(upload)
