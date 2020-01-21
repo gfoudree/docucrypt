@@ -1,36 +1,10 @@
-<!DOCTYPE html>
-
-<head>
-    <title>{{ title }}</title>
-
-    <script type="text/javascript" src="static/scryptsy.js"></script>
-    <script type="text/javascript" src="static/base64-js/base64js.min.js"></script>
-    <script type="text/javascript" src="static/jquery-3.4.1.min.js"></script>
-    <script type="text/javascript" src="static/semantic.min.js"></script>
-    <script type="text/javascript" src="static/components/dropdown.js"></script>
-    <script type="text/javascript" src="static/main.js"></script>
-
-    <link rel="stylesheet" type="text/css" href="static/semantic.min.css">
-    <link rel="stylesheet" type="text/css" href="static/main.css">
-</head>
-
+{% include "header.html" %}
 <body>
     {% csrf_token %}
     <div class="ui middle aligned center aligned grid">
         <div class="column">
             <div class="ui one column centered aligned page grid">
                 <div class="column nine wide">
-
-                    <div id="uploadBox" class="uploadBox" onclick="document.getElementById('fileToUpload').click();">
-                        <label id="uploadLabel">Drag & Drop files</label>
-                        <br>
-                        <br>
-                        <i class="huge upload icon"></i>
-                        <input type="file" name="fileToUpload" id="fileToUpload" style="display: none;">
-                    </div>
-
-
-                    
                     <div class="ui form" id="form">
                         <div class="field" id="passwordField">
                             <label>Password</label>
@@ -54,6 +28,17 @@
                                 </div>
                             </div>
                         </div>
+
+                        <div id="uploadBox" class="uploadBox"
+                            onclick="document.getElementById('fileToUpload').click();">
+                            <label id="uploadLabel">Drag & Drop files</label>
+                            <br>
+                            <br>
+                            <i class="huge upload icon"></i>
+                            <input type="file" name="fileToUpload" id="fileToUpload" style="display: none;">
+                        </div>
+                        <br>
+                        <br>
                         <div class="ui animated button fluid" name="uploadButton" id="uploadButton" tabindex="0"
                             onclick="handleUpload()">
                             <div class="visible content">Upload</div>

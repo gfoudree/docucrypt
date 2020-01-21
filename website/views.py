@@ -6,6 +6,7 @@ from .models import Upload
 import secrets
 import base64
 import hashlib
+import os
 import datetime
 from datetime import *
 
@@ -95,6 +96,9 @@ def getFile(request, fileID):
         return HttpResponse("Bad file name", status=400)
     try:
         upload = Upload.objects.get(urlFName=fileID)
-        return HttpResponse("Found!")
-    except:
+        fileData = base64.b64encode(open(upload.uploadedToFile, 'rb').read()).decode()
+
+        return render(request, 'viewfile.html', {'data' : fileData})
+    except Exception as err:
+        print("Error reading encrypted upload file " + str(err))
         return HttpResponse("Bad file name", status=400)
