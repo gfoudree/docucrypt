@@ -2,8 +2,20 @@ body {
     background-color: rgb(253, 253, 253);
 }
 
-#uploadBox {
+.uploadBox {
     border: 1px dashed rgba(21, 20, 26, 0.2);
     border-radius: 3px;
     border-radius: 4px;
+    text-align: center;
+    width: 100%;
+    padding: 17px;
+    background-color: beige;
+}
+
+#uploadLabel {
+    font-size: larger;
+}
+
+.uploadBox.upload-dragover {
+    background-color: grey;
 }

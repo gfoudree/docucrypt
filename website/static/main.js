@@ -1,5 +1,26 @@
 $(document).ready(function () {
     $('.ui.dropdown').dropdown(); // Initialize dropdown library for menu
+
+    var uploadDiv = $('#uploadBox');
+    var fileInput = uploadDiv.find('input[type=file]');
+    var label = $('#uploadLabel');
+    uploadDiv.on('drag dragstart dragend dragover dragenter dragleave drop', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    })
+        .on('dragover dragenter', function () {
+            uploadDiv.addClass('upload-dragover');
+        })
+        .on('dragleave dragend drop', function () {
+            uploadDiv.removeClass('upload-dragover');
+        })
+        .on('drop', function (e) {
+            droppedFiles = e.originalEvent.dataTransfer.files;
+            label.text(droppedFiles[0].name);
+        });
+    fileInput.on('change', function (e) {
+        label.text(e.target.files[0].name);
+    });
 });
 
 function checkPassword() {

@@ -17,16 +17,20 @@
 <body>
     {% csrf_token %}
     <div class="ui middle aligned center aligned grid">
-
         <div class="column">
             <div class="ui one column centered aligned page grid">
                 <div class="column nine wide">
 
-                    <div id="uploadBox">
-                        <p>Drag & Drop files</p>
+                    <div id="uploadBox" class="uploadBox" onclick="document.getElementById('fileToUpload').click();">
+                        <label id="uploadLabel">Drag & Drop files</label>
+                        <br>
+                        <br>
                         <i class="huge upload icon"></i>
+                        <input type="file" name="fileToUpload" id="fileToUpload" style="display: none;">
                     </div>
-                    <input type="file" name="fileToUpload" id="fileToUpload">
+
+
+                    
                     <div class="ui form" id="form">
                         <div class="field" id="passwordField">
                             <label>Password</label>
