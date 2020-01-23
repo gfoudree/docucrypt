@@ -17,6 +17,7 @@ $(document).ready(function () {
         .on('drop', function (e) {
             droppedFiles = e.originalEvent.dataTransfer.files;
             label.text(droppedFiles[0].name);
+            fileInput.files = droppedFiles[0];
         });
     fileInput.on('change', function (e) {
         label.text(e.target.files[0].name);
@@ -25,14 +26,21 @@ $(document).ready(function () {
 
 function checkPassword() {
     var pass = $('#passwordInputField').val();
-    if (pass.length < 8 && pass.length > 0) {
+    if ((pass.length < 8 && pass.length > 0) || (pass.length > 64)) { // Must be at least 8 chars and less than 64
         $('#passwordField').addClass('error');
+        $('#passwordField').popup({
+            content : 'Password must be between 8-64 characters',
+            position: 'left center',
+        });
+        $('#passwordField').popup('show');
     }
     else {
         $('#passwordField').removeClass('error');
+        $('#passwordField').popup('destroy');
     }
 }
 
+// TODO: Change this to be a hidden div in the page and just update the content
 function displayMessage(message, title, bad) {
     var html = '<div class="ui ';
     if (bad) {

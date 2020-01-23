@@ -19,3 +19,9 @@ body {
 .uploadBox.upload-dragover {
     background-color: grey;
 }
+
+.uploadForm {
+    position: absolute;
+    top: 50%;
+    margin: 0;
+}

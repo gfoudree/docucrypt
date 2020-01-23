@@ -5,12 +5,11 @@
         <div class="column">
             <div class="ui one column centered aligned page grid">
                 <div class="column nine wide">
-                    <div class="ui form" id="form">
+                    <div class="ui form uploadForm" id="form">
                         <div class="field" id="passwordField">
                             <label>Password</label>
                             <input placeholder="Encryption Password" type="password" name="password"
-                                id="passwordInputField" onchange="checkPassword()" onkeypress="this.onchange();"
-                                onpaste="this.onchange();" oninput="this.onchange();">
+                                id="passwordInputField" onchange="checkPassword()">
                         </div>
                         <div class="field">
                             <label>Expiration Time</label>
@@ -28,7 +27,7 @@
                                 </div>
                             </div>
                         </div>
-
+                        <br>
                         <div id="uploadBox" class="uploadBox"
                             onclick="document.getElementById('fileToUpload').click();">
                             <label id="uploadLabel">Drag & Drop files</label>

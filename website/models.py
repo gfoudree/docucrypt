@@ -9,7 +9,7 @@ class Upload(models.Model):
     IV = models.CharField(max_length=32)
     fileSize = models.IntegerField()
     expirationTime = models.CharField(max_length=10)
-    urlFName = models.CharField(max_length=40)
+    fileUUID = models.CharField(max_length=64)
     salt = models.CharField(max_length=128)
 
     def __str__(self):
