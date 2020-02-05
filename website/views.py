@@ -4,6 +4,7 @@ from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import Upload
 
 from .backend.upload import *
+import website.models
 
 import base64
 
@@ -41,17 +42,23 @@ def upload(request):
     else:
         return redirect('/')
 
+def viewFile(request, fileID, decryptionKey):
+     return render(request, 'viewfile.html', {'data' : ''})
+
 def manage(request, fileID, decryptionKey):
     pass
 
-def getFile(request, fileID):
-    if len(fileID) != 40:
-        return HttpResponse("Bad file name", status=400)
+# Retrieves a file given the UUID from the database and sends the ciphertext back
+def download(request):
+    fileID = request.POST.get('id', '')
+    if len(fileID) != website.models.FILE_UUID_LENGTH:
+        print("Invalid request to download file of UUID {} as length ({}) != {}".format(fileID, len(fileID), website.models.FILE_UUID_LENGTH))
+        return JsonResponse({'success': False, 'error': 'Invalid file name'}, status=400)
     try:
         upload = Upload.objects.get(fileUUID=fileID)
         fileData = base64.b64encode(open(upload.uploadedToFile, 'rb').read()).decode()
 
-        return render(request, 'viewfile.html', {'data' : fileData})
+        return JsonResponse({'success': True, 'cipherText': fileData, 'salt': upload.salt, 'IV': upload.IV})
     except Exception as err:
         print("Error reading encrypted upload file " + str(err))
-        return HttpResponse("Bad file name", status=400)
+        return JsonResponse({'success': False, 'error': 'Invalid file name'}, status=400)

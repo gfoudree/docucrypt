@@ -6,6 +6,7 @@ import datetime
 from datetime import *
 
 from website.models import Upload
+import website.models
 
 UPLOAD_FOLDER = '/tmp/'
 EXPIRATION_TABLE = [timedelta(hours=12), timedelta(days=1), timedelta(days=7),
@@ -22,7 +23,7 @@ def saveUploadedFile(request):
     # Save file to disk
     fileData = base64.decodebytes(fileParam)
     fName = "{0}{1}.upload".format(UPLOAD_FOLDER, secrets.token_hex(32)) # Separate file name for local file for security
-    fileUUID = secrets.token_urlsafe(46)[:46] # Name for url portion (http://swag.com/get/fileUUID#decryptionKey), truncated @ 46 b/c param is bits -> var output len
+    fileUUID = secrets.token_urlsafe(website.models.FILE_UUID_LENGTH)[:(website.models.FILE_UUID_LENGTH)] # Name for url portion (http://swag.com/get/fileUUID#decryptionKey), truncated @ 46 b/c param is bits -> var output len
 
     writtenBytes = 0
     with open(fName, 'wb') as f:

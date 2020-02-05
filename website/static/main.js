@@ -65,6 +65,32 @@ function sendMessage(message, severity) {
     console.log(message);
 }
 
+async function decrypt(b64CipherText, b64IV, b64UrlKey) {
+    let cipherText =  base64js.toByteArray(b64CipherText);
+    let key = Base64DecodeUrl(b64UrlKey);
+    let IV = base64js.toByteArray(b64IV);
+
+    let importedKey = await crypto.subtle.importKey(
+        "raw",
+        key,
+        "AES-CBC",
+        false,
+        ["decrypt"]
+    );
+
+    let plainText = await window.crypto.subtle.decrypt(
+        {
+            name: "AES-CBC",
+            iv: IV
+        },
+        importedKey,
+        cipherText.buffer
+    );
+    
+    let dec = new TextDecoder();
+    return dec.decode(plainText);
+}
+
 async function encrypt(data) {
     let enc = new TextEncoder();
     let aesKey = await window.crypto.subtle.generateKey(
@@ -79,8 +105,8 @@ async function encrypt(data) {
 
     let cipherText = await window.crypto.subtle.encrypt(
         {
-            "name": "AES-CBC",
-            iv
+            name: "AES-CBC",
+            iv: iv
         },
         aesKey,
         enc.encode(data)
@@ -123,7 +149,7 @@ async function encryptData(data, password) {
         key = await crypto.subtle.importKey(
             "raw",
             scryptKey,
-            { "name": "AES-CBC" },
+            { name: "AES-CBC" },
             true,
             ["encrypt", "decrypt"]
         );
@@ -135,8 +161,8 @@ async function encryptData(data, password) {
 
     let cipherText = window.crypto.subtle.encrypt(
         {
-            "name": "AES-CBC",
-            iv
+            name: "AES-CBC",
+            iv: iv
         },
         key,
         enc.encode(data)
@@ -193,9 +219,11 @@ function handleUpload() {
 }
 
 function sendEncryptedContent(encryptedDocument) {
-    var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+    var csrfToken = jQuery("[name=csrfmiddlewaretoken]").val();
     var encBytes = new Uint8Array(encryptedDocument['CipherText']);
     let fd = new FormData();
+    let encryptionKey = encryptedDocument['Key'];
+
     fd.append('data', base64js.fromByteArray(encBytes));
     fd.append('IV', base64js.fromByteArray(encryptedDocument['IV']));
     fd.append('Salt', encryptedDocument['Salt']);
@@ -206,7 +234,7 @@ function sendEncryptedContent(encryptedDocument) {
         type: 'POST',
         url: '/upload/',
         data: fd,
-        headers: { 'X-CSRFToken': csrftoken },
+        headers: { 'X-CSRFToken': csrfToken },
         processData: false,
         contentType: false,
         error: function (request, error) {
@@ -215,8 +243,51 @@ function sendEncryptedContent(encryptedDocument) {
         success: function (data) {
             displayMessage('', 'File upload success!', false);
             console.log(data);
+            
+            // Compute URL to retrieve file with format /fileUUID#key
+            var fileUrl = window.location.protocol + "//" + window.location.hostname;
+            if (window.location.port.length > 0 ) { //Are we running on a non-standard port? (debugging)
+                fileUrl += ":" + window.location.port;
+            }
+            fileUrl += "/viewFile/" + data['url'] + "/" + Base64EncodeUrl(encryptionKey);
+            console.log("URL: " + fileUrl);
+
         }
     });
     var uploadButton = document.getElementById('uploadButton');
     uploadButton.classList.remove("loading");
+}
+
+function Base64DecodeUrl(str){
+    while ((str.length % 4) != 0) { //Add padding if necessary
+        str += "=";
+    }
+    return base64js.toByteArray(str.replace(/-/g, '+').replace(/_/g, '/'));
+}
+
+function Base64EncodeUrl(str){
+    var b64 = base64js.fromByteArray(str);
+    return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/\=+$/, '');
+}
+
+function getEncryptedFile() {
+    let csrfToken = jQuery("[name=csrfmiddlewaretoken]").val();
+    let fileUUID = window.location.pathname.split('/')[2]; // UUID of file to fetch
+    let decryptionKey = window.location.pathname.split('/')[3]; // Decryption key
+    $.ajax({
+        type: 'POST', 
+        url:'http://127.0.0.1:8000/download/', 
+        headers:{'X-CSRFToken': csrfToken}, 
+        data:{'id': fileUUID},
+        success: (data, status) => {
+            console.log(data);
+            decrypt(data['cipherText'], data['IV'], decryptionKey).then(decryptedData => {
+                console.log(decryptedData);
+            });
+
+        },
+        error: (request, status, error) => {
+            console.log('Error');
+        }
+    });
 }

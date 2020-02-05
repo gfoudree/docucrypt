@@ -19,9 +19,14 @@ from django.conf.urls import url
 from website import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    #path('admin/', admin.site.urls),
+
+    # Frontend URLs
     url(r'^$', views.index, name='index'),
+    path('viewFile/<slug:fileID>/<slug:decryptionKey>', views.viewFile),
+
+    # Backend APIs
     path('upload/', views.upload, name='upload'),
     path('manage/<slug:fileID>/<slug:decryptionKey>', views.manage),
-    path('file/<slug:fileID>/', views.getFile),
+    path('download/', views.download, name='download'),
 ]

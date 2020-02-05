@@ -1,6 +1,8 @@
 from django.db import models
 from datetime import datetime
 
+FILE_UUID_LENGTH = 46
+
 class Upload(models.Model):
     uploadTime = models.DateTimeField(auto_now_add=True)
     fileName = models.CharField(max_length=200)
@@ -13,6 +15,7 @@ class Upload(models.Model):
     salt = models.CharField(max_length=128)
 
     def __str__(self):
-        return '{} {} {} {} {} {} {}'.format(self.uploadTime, self.fileName,
+        urlToFile = "http://127.0.0.1:8000/getFile/{}".format(self.fileUUID)
+        return 'Time:{} Name:{} Hash:{} LocalFile:{} IV:{} Size:{} Expires:{} URL:{}'.format(self.uploadTime, self.fileName,
             self.fileSHA256, self.uploadedToFile, self.IV, self.fileSize,
-            self.expirationTime, self.urlFName)
+            self.expirationTime, urlToFile)
